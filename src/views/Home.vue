@@ -13,7 +13,7 @@
     <button v-on:click="createProduct()">Create product</button>
     <div v-for="product in products">
       <h2>Title: {{ product.name }}</h2>
-      <!-- <img v-bind:src="product.images" v-bind:alt="product.title" /> -->
+      <img v-bind:src="product.images" v-bind:alt="product.title" />
       <div>
         <button v-on:click="currentProduct = product">More Info</button>
       </div>
@@ -21,6 +21,15 @@
         <p>Name: {{ product.name }}</p>
         <p>Price: {{ product.price }}</p>
         <p>Description: {{ product.description }}</p>
+        <div>
+          <h4>Edit Product</h4>
+          Name:
+          <input type="text" v-model="product.name" />
+          Price:
+          <input type="text" v-model="product.price" />
+          Description:
+          <input type="text" v-model="product.description" />
+        </div>
       </div>
     </div>
   </div>
@@ -46,6 +55,17 @@ export default {
   created: function() {
     axios.get("/api/products").then(response => {
       this.products = response.data;
+    });
+  },
+  updateProduct: function(product) {
+    var params = {
+      name: product.name,
+      price: product.price,
+      description: product.description
+    };
+    axios.patch("/api/products/" + product.id, params).then(response => {
+      console.log("Success", response.data);
+      product = response.data;
     });
   },
   methods: {
