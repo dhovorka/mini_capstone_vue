@@ -1,11 +1,27 @@
 <template>
   <div class="home">
-    <button v-on:click="createProduct()">Create product</button>
     <h1>{{ message }}</h1>
     <p>{{ name }}</p>
+    <div>
+      Name:
+      <input type="text" v-model="newProductName" />
+      Price:
+      <input type="text" v-model="newProductPrice" />
+      Description:
+      <input type="text" v-model="newProductDescription" />
+    </div>
+    <button v-on:click="createProduct()">Create product</button>
     <div v-for="product in products">
       <h2>Title: {{ product.name }}</h2>
-      <img v-bind:src="product.images" v-bind:alt="product.title" />
+      <!-- <img v-bind:src="product.images" v-bind:alt="product.title" /> -->
+      <div>
+        <button v-on:click="currentProduct = product">More Info</button>
+      </div>
+      <div v-if="product === currentProduct">
+        <p>Name: {{ product.name }}</p>
+        <p>Price: {{ product.price }}</p>
+        <p>Description: {{ product.description }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -20,7 +36,11 @@ export default {
     return {
       message: "Welcome to Vue.js!",
       name: "Dan",
-      products: []
+      products: [],
+      newProductName: "",
+      newProductPrice: "",
+      newProductDescription: "",
+      currentProduct: null
     };
   },
   created: function() {
@@ -32,10 +52,9 @@ export default {
     createProduct: function() {
       console.log("create a product...");
       var params = {
-        name: "test name",
-        price: "test price",
-        description: "test description",
-        supplier_id: 1
+        name: this.newProductName,
+        price: this.newProductPrice,
+        description: this.newProductDescription
       };
       axios.post("/api/products", params).then(response => {
         console.log("success", response.data);
