@@ -29,6 +29,8 @@
           <input type="text" v-model="product.price" />
           Description:
           <input type="text" v-model="product.description" />
+          <button v-on:click="updateProduct(product)">update product</button>
+          <button v-on:click="destroyProduct(product)">Destroy product</button>
         </div>
       </div>
     </div>
@@ -43,7 +45,7 @@ var axios = require("axios");
 export default {
   data: function() {
     return {
-      message: "Welcome to Vue.js!",
+      message: "Welcome to the jungle!",
       name: "Dan",
       products: [],
       newProductName: "",
@@ -57,17 +59,6 @@ export default {
       this.products = response.data;
     });
   },
-  updateProduct: function(product) {
-    var params = {
-      name: product.name,
-      price: product.price,
-      description: product.description
-    };
-    axios.patch("/api/products/" + product.id, params).then(response => {
-      console.log("Success", response.data);
-      product = response.data;
-    });
-  },
   methods: {
     createProduct: function() {
       console.log("create a product...");
@@ -78,6 +69,24 @@ export default {
       };
       axios.post("/api/products", params).then(response => {
         console.log("success", response.data);
+      });
+    },
+    updateProduct: function(product) {
+      var params = {
+        name: product.name,
+        price: product.price,
+        description: product.description
+      };
+      axios.patch("/api/products/" + product.id, params).then(response => {
+        console.log("Success", response.data);
+        product = response.data;
+      });
+    },
+    destroyProduct: function(product) {
+      axios.delete("/api/products/" + product.id).then(response => {
+        console.log("successfully deleted", response.data);
+        var index = this.products.indexOf(product);
+        this.products.splice(index, 1);
       });
     }
   }
