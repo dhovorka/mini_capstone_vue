@@ -11,7 +11,9 @@
       <input type="text" v-model="newProductDescription" />
     </div>
     <button v-on:click="createProduct()">Create product</button>
-    <div v-for="product in products">
+    Search by name or description:
+    <input type="text" v-model="searchFilter" />
+    <div v-for="product in filterBy(products, searchFilter, 'name', 'description')">
       <h2>Title: {{ product.name }}</h2>
       <img v-bind:src="product.images" v-bind:alt="product.title" />
       <div>
@@ -41,8 +43,10 @@
 
 <script>
 var axios = require("axios");
+import Vue2Filters from "vue2-filters";
 
 export default {
+  mixins: [Vue2Filters.mixin],
   data: function() {
     return {
       message: "Welcome to the jungle!",
@@ -51,7 +55,8 @@ export default {
       newProductName: "",
       newProductPrice: "",
       newProductDescription: "",
-      currentProduct: null
+      currentProduct: null,
+      searchFilter: ""
     };
   },
   created: function() {
