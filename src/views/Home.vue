@@ -11,9 +11,15 @@
       <input type="text" v-model="newProductDescription" />
     </div>
     <button v-on:click="createProduct()">Create product</button>
+    <br />
+    <button v-on:click="setSortAttribute('description')">Sort by Description</button>
+    <br />
+    <button v-on:click="setSortAttribute('name')">Sort by Name</button>
     Search by name or description:
     <input type="text" v-model="searchFilter" />
-    <div v-for="product in filterBy(products, searchFilter, 'name', 'description')">
+    <div
+      v-for="product in orderBy(filterBy(products, searchFilter, 'name', 'description'), sortAttribute, sortAscending)"
+    >
       <h2>Title: {{ product.name }}</h2>
       <img v-bind:src="product.images" v-bind:alt="product.title" />
       <div>
@@ -56,7 +62,9 @@ export default {
       newProductPrice: "",
       newProductDescription: "",
       currentProduct: null,
-      searchFilter: ""
+      searchFilter: "",
+      sortAttribute: "name",
+      sortAscending: 1
     };
   },
   created: function() {
@@ -65,35 +73,46 @@ export default {
     });
   },
   methods: {
-    createProduct: function() {
-      console.log("create a product...");
-      var params = {
-        name: this.newProductName,
-        price: this.newProductPrice,
-        description: this.newProductDescription
-      };
-      axios.post("/api/products", params).then(response => {
-        console.log("success", response.data);
-      });
-    },
-    updateProduct: function(product) {
-      var params = {
-        name: product.name,
-        price: product.price,
-        description: product.description
-      };
-      axios.patch("/api/products/" + product.id, params).then(response => {
-        console.log("Success", response.data);
-        product = response.data;
-      });
-    },
-    destroyProduct: function(product) {
-      axios.delete("/api/products/" + product.id).then(response => {
-        console.log("successfully deleted", response.data);
-        var index = this.products.indexOf(product);
-        this.products.splice(index, 1);
-      });
+    setSortAttribute: function(inputAttribute) {
+      if (this.sortAttribute === inputAttribute) {
+        if (this.sortAscending === 1) {
+          this.sortAscending = -1;
+        } else {
+          this.sortAscending = 1;
+        }
+        this.sortAscending - 1;
+      }
+      this.sortAttribute = inputAttribute;
     }
+  },
+  createProduct: function() {
+    console.log("create a product...");
+    var params = {
+      name: this.newProductName,
+      price: this.newProductPrice,
+      description: this.newProductDescription
+    };
+    axios.post("/api/products", params).then(response => {
+      console.log("success", response.data);
+    });
+  },
+  updateProduct: function(product) {
+    var params = {
+      name: product.name,
+      price: product.price,
+      description: product.description
+    };
+    axios.patch("/api/products/" + product.id, params).then(response => {
+      console.log("Success", response.data);
+      product = response.data;
+    });
+  },
+  destroyProduct: function(product) {
+    axios.delete("/api/products/" + product.id).then(response => {
+      console.log("successfully deleted", response.data);
+      var index = this.products.indexOf(product);
+      this.products.splice(index, 1);
+    });
   }
 };
 </script>
